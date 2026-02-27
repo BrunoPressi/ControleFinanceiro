@@ -21,8 +21,8 @@ public class Receita {
     @Column(nullable = false)
     private LocalDate data;
 
-    @Column(columnDefinition = "VARCHAR(100) DEFAULT 'SEM DESCRIÇÃO'")
-    private String descricao;
+    @Column()
+    private String descricao = "SEM DESCRIÇÃO";
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;

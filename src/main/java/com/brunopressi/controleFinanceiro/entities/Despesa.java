@@ -22,8 +22,8 @@ public class Despesa {
     @Column(nullable = false)
     private LocalDate data;
 
-    @Column(columnDefinition = "VARCHAR(100) DEFAULT 'SEM DESCRIÇÃO'")
-    private String descricao;
+    @Column()
+    private String descricao = "SEM DESCRIÇÃO";
 
     @Column(nullable = false)
     private Categoria categoria;
