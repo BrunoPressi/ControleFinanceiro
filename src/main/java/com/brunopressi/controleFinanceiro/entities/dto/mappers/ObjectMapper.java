@@ -1,4 +1,4 @@
-package com.brunopressi.controleFinanceiro.entities.dto.mapper;
+package com.brunopressi.controleFinanceiro.entities.dto.mappers;
 
 import com.github.dozermapper.core.DozerBeanMapperBuilder;
 import com.github.dozermapper.core.Mapper;

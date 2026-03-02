@@ -1,4 +1,4 @@
-package com.brunopressi.controleFinanceiro.entities.dto.UsuarioDTO;
+package com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
