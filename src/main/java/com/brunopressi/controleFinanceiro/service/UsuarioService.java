@@ -43,12 +43,6 @@ public class UsuarioService {
         return ObjectMapper.parseObject(usuario, UsuarioResponseDTO.class);
     }
 
-    @Transactional(readOnly = true)
-    public List<UsuarioResponseDTO> findAll() {
-        List<Usuario> usuarioList = usuarioRepository.findAll();
-        return ObjectMapper.parseObjectList(usuarioList, UsuarioResponseDTO.class);
-    }
-
     @Transactional(readOnly = false)
     public void delete(Long id) {
         this.findById(id);
