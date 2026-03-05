@@ -6,11 +6,16 @@ import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioCreateD
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioResponseDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioUpdateDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.mappers.ObjectMapper;
+import com.brunopressi.controleFinanceiro.entities.enums.Role;
 import com.brunopressi.controleFinanceiro.exception.DuplicateEntityException;
 import com.brunopressi.controleFinanceiro.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +27,12 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = false)
     public UsuarioResponseDTO create(UsuarioCreateDTO usuarioCreateDTO) {
         Usuario usuario = ObjectMapper.parseObject(usuarioCreateDTO, Usuario.class);
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         try {
             usuarioRepository.save(usuario);
         }
@@ -64,5 +71,13 @@ public class UsuarioService {
         }
 
         return ObjectMapper.parseObject(usuario, UsuarioResponseDTO.class);
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario buscarPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Usuario com email %s não encontrado",email))
+        );
+        return usuario;
     }
 }

@@ -1,10 +1,12 @@
 package com.brunopressi.controleFinanceiro.web.exception;
 
+import com.brunopressi.controleFinanceiro.exception.BadCredentialsException;
 import com.brunopressi.controleFinanceiro.exception.DuplicateEntityException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -52,5 +54,18 @@ public class ExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorMessage> badCredentialsException(RuntimeException exception, HttpServletRequest request) {
+        ErrorMessage errorMessage = new ErrorMessage(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 }

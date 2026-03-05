@@ -1,5 +1,6 @@
 package com.brunopressi.controleFinanceiro.entities;
 
+import com.brunopressi.controleFinanceiro.entities.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,8 +21,11 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 70)
     private String email;
 
-    @Column(nullable = false, length = 12)
+    @Column(nullable = false)
     private String senha;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.ROLE_USUARIO;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Receita> receitas;
