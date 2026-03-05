@@ -29,7 +29,7 @@ public class SpringSecurityConfig {
                         (authorize) -> authorize
                                 .requestMatchers("/api/v1/usuario", "/api/v1/auth").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                                .anyRequest().denyAll()
+                                .anyRequest().authenticated()
                 ).sessionManagement(
                         session -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
