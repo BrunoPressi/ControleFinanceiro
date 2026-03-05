@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -19,7 +20,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> methodArgumentNotValidException(HttpServletRequest request, BindingResult bindingResult) {
         ErrorMessage errorMessage = new ErrorMessage(
-                LocalDateTime.now(),
+                Instant.now(),
                 "Campos inválidos",
                 HttpStatus.BAD_REQUEST.value(),
                 request.getRequestURI(),
@@ -33,7 +34,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(DuplicateEntityException.class)
     public ResponseEntity<ErrorMessage> duplicateEntityException(RuntimeException e, HttpServletRequest request) {
         ErrorMessage errorMessage = new ErrorMessage(
-                LocalDateTime.now(),
+                Instant.now(),
                 e.getMessage(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
@@ -46,7 +47,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorMessage> entityNotFoundException(RuntimeException e, HttpServletRequest request) {
         ErrorMessage errorMessage = new ErrorMessage(
-                LocalDateTime.now(),
+                Instant.now(),
                 e.getMessage(),
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
@@ -59,7 +60,7 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorMessage> badCredentialsException(RuntimeException exception, HttpServletRequest request) {
         ErrorMessage errorMessage = new ErrorMessage(
-                LocalDateTime.now(),
+                Instant.now(),
                 exception.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),

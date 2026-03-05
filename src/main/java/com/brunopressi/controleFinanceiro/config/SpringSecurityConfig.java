@@ -1,6 +1,8 @@
 package com.brunopressi.controleFinanceiro.config;
 
 import com.brunopressi.controleFinanceiro.jwt.JwtAuthorizationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +18,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SpringSecurityConfig {
+
+    private final ObjectMapper objectMapper;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -36,7 +41,7 @@ public class SpringSecurityConfig {
                 ).addFilterBefore(
                         jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
                 ).exceptionHandling( ex ->
-                        ex.authenticationEntryPoint((new JwtAuthenticationEntryPoint())))
+                        ex.authenticationEntryPoint(jwtAuthenticationEntryPoint()))
                 .build();
 
     }
@@ -56,4 +61,8 @@ public class SpringSecurityConfig {
         return new JwtAuthorizationFilter();
     }
 
+    @Bean
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        return new JwtAuthenticationEntryPoint(objectMapper);
+    }
 }
