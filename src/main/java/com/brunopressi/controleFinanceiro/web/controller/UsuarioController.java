@@ -3,6 +3,7 @@ package com.brunopressi.controleFinanceiro.web.controller;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioCreateDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioResponseDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioUpdateDTO;
+import com.brunopressi.controleFinanceiro.jwt.JwtUserDetails;
 import com.brunopressi.controleFinanceiro.service.UsuarioService;
 import com.brunopressi.controleFinanceiro.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,9 +63,9 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> buscarUsuario(@PathVariable Long id) {
-        UsuarioResponseDTO usuarioResponseDTO = usuarioService.findById(id);
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> buscarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails) {
+        UsuarioResponseDTO usuarioResponseDTO = usuarioService.findById(userDetails.getId());
 
         return ResponseEntity.ok(usuarioResponseDTO);
     }
@@ -80,9 +84,9 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
-        usuarioService.delete(id);
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deletarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails) {
+        usuarioService.delete(userDetails.getId());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -103,9 +107,9 @@ public class UsuarioController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
-    @PatchMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(@PathVariable Long id, @RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) {
-        UsuarioResponseDTO usuarioResponseDTO = usuarioService.patch(id, usuarioUpdateDTO);
+    @PatchMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails, @RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) {
+        UsuarioResponseDTO usuarioResponseDTO = usuarioService.patch(userDetails.getId(), usuarioUpdateDTO);
 
         return ResponseEntity.ok(usuarioResponseDTO);
     }
