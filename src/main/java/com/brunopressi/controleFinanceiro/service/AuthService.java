@@ -27,19 +27,18 @@ public class AuthService {
     public JwtToken auth(@Valid AuthDTO authDTO) {
 
         try {
-            usuarioService.buscarPorEmail(authDTO.getEmail());
+            usuarioService.buscarPorEmail(authDTO.email());
 
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(authDTO.getEmail(), authDTO.getSenha());
+                    new UsernamePasswordAuthenticationToken(authDTO.email(), authDTO.senha());
 
             authenticationManager.authenticate(authenticationToken);
-            JwtToken token = jwtUserDetailsService.getTokenAuthenticated(authDTO.getEmail());
+            JwtToken token = jwtUserDetailsService.getTokenAuthenticated(authDTO.email());
 
             return token;
         }
         catch (AuthenticationException e) {
-            log.warn("Bad Credentials for email: {}", authDTO.getEmail());
-            throw new BadCredentialsException(String.format("Senha inválida para o email %s", authDTO.getEmail()));
+            throw new BadCredentialsException(String.format("Senha inválida para o email %s", authDTO.email()));
         }
     }
 }

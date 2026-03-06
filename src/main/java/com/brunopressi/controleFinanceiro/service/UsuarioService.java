@@ -5,21 +5,14 @@ import com.brunopressi.controleFinanceiro.entities.dto.mappers.UsuarioMapper;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioCreateDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioResponseDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioUpdateDTO;
-import com.brunopressi.controleFinanceiro.entities.dto.mappers.ObjectMapper;
-import com.brunopressi.controleFinanceiro.entities.enums.Role;
 import com.brunopressi.controleFinanceiro.exception.DuplicateEntityException;
 import com.brunopressi.controleFinanceiro.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +24,7 @@ public class UsuarioService {
 
     @Transactional(readOnly = false)
     public UsuarioResponseDTO create(UsuarioCreateDTO usuarioCreateDTO) {
-        Usuario usuario = ObjectMapper.parseObject(usuarioCreateDTO, Usuario.class);
+        Usuario usuario = usuarioMapper.toEntity(usuarioCreateDTO);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         try {
             usuarioRepository.save(usuario);
@@ -39,7 +32,7 @@ public class UsuarioService {
         catch(DataIntegrityViolationException e) {
             throw new DuplicateEntityException(String.format("Usuario com email %s já cadastrado.", usuario.getEmail()));
         }
-        return ObjectMapper.parseObject(usuario, UsuarioResponseDTO.class);
+        return usuarioMapper.toDto(usuario);
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +40,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Usuario %d não encontrado", id))
         );
-        return ObjectMapper.parseObject(usuario, UsuarioResponseDTO.class);
+        return usuarioMapper.toDto(usuario);
     }
 
     @Transactional(readOnly = false)
@@ -67,16 +60,16 @@ public class UsuarioService {
             usuarioRepository.flush();
         }
         catch (DataIntegrityViolationException e) {
-            throw new DuplicateEntityException(String.format("Usuario com email %s já cadastrado", usuarioUpdateDTO.getEmail()));
+            throw new DuplicateEntityException(String.format("Usuario com email %s já cadastrado", usuarioUpdateDTO.email()));
         }
 
-        return ObjectMapper.parseObject(usuario, UsuarioResponseDTO.class);
+        return usuarioMapper.toDto(usuario);
     }
 
     @Transactional(readOnly = true)
     public Usuario buscarPorEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Usuario com email %s não encontrado",email))
+                () -> new EntityNotFoundException(String.format("Usuario com email %s não encontrado",  email))
         );
         return usuario;
     }

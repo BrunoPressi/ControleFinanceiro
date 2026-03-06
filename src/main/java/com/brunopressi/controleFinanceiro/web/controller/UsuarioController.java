@@ -37,7 +37,7 @@ public class UsuarioController {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         }
     )
-    @PostMapping()
+    @PostMapping("/cadastro")
     public ResponseEntity<UsuarioResponseDTO> criarUsuario(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.create(usuarioCreateDTO);
 

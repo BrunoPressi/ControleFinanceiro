@@ -32,9 +32,10 @@ public class SpringSecurityConfig {
                 .formLogin(formlogin -> formlogin.disable())
                 .authorizeHttpRequests(
                         (authorize) -> authorize
-                                .requestMatchers("/api/v1/usuario", "/api/v1/auth").permitAll()
+                                .requestMatchers("/api/v1/usuario/cadastro", "/api/v1/auth").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/api/v1/**").authenticated()
+                                .anyRequest().permitAll()
                 ).sessionManagement(
                         session -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
