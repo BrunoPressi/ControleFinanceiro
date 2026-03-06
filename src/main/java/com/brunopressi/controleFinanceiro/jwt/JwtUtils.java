@@ -5,8 +5,10 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -15,29 +17,36 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
+@Component
+@Getter
 public class JwtUtils {
 
-    public static final String JWT_BEARER = "Bearer ";
-    public static final String JWT_AUTHORIZATION = "Authorization";
-    //@Value("${JWT_SECRET_KEY}")
-    public static final String SECRET_KEY = "AT4+YraIHCWg/W3BAZ4nMFc+7xZQ0BLXSZ6fkuzLlqA=";
-    public static final long EXPIRE_DAYS = 0;
-    public static final long EXPIRE_HOURS = 0;
-    public static final long EXPIRE_MINUTES = 5;
+    @Value("${jwt.bearer}")
+    private String JWT_BEARER;
+    @Value("${jwt.authorization}")
+    private String JWT_AUTHORIZATION;
+    @Value("${jwt.secret.key}")
+    private String SECRET_KEY;
+    @Value("${jwt.expire.days}")
+    private long EXPIRE_DAYS;
+    @Value("${jwt.expire.hours}")
+    private long EXPIRE_HOURS;
+    @Value("${jwt.expire.minutes}")
+    private long EXPIRE_MINUTES;
 
     private JwtUtils(){}
 
-    private static Key generateKey() {
+    private Key generateKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static Date toExpireDate(Date start) {
+    private Date toExpireDate(Date start) {
         LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime end = dateTime.plusDays(EXPIRE_DAYS).plusHours(EXPIRE_HOURS).plusMinutes(EXPIRE_MINUTES);
         return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    public static JwtToken createToken(String username, String role) {
+    public JwtToken createToken(String username, String role) {
         Date issuedAt = new Date();
         Date limit = toExpireDate(issuedAt);
 
@@ -53,7 +62,7 @@ public class JwtUtils {
         return new JwtToken(token);
     }
 
-    private static Claims getClaimsFromToken(String token) {
+    private Claims getClaimsFromToken(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(generateKey()).build()
@@ -65,11 +74,11 @@ public class JwtUtils {
         return null;
     }
 
-    public static String getEmailFromToken(String token) {
+    public String getEmailFromToken(String token) {
         return getClaimsFromToken(token).getSubject();
     }
 
-    public static boolean isTokenValid(String token) {
+    public boolean isTokenValid(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(generateKey()).build()
@@ -82,7 +91,7 @@ public class JwtUtils {
         return false;
     }
 
-    private static String refactorToken(String token) {
+    private String refactorToken(String token) {
         if (token.contains(JWT_BEARER)) {
             return token.substring(JWT_BEARER.length());
         }

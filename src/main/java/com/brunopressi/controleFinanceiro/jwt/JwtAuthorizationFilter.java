@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,27 +18,31 @@ import java.io.IOException;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        final String token = request.getHeader(JwtUtils.JWT_AUTHORIZATION);
+        final String token = request.getHeader(jwtUtils.getJWT_AUTHORIZATION());
 
-        if (token == null || !token.startsWith(JwtUtils.JWT_BEARER)) {
+        if (token == null || !token.startsWith(jwtUtils.getJWT_BEARER())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (!JwtUtils.isTokenValid(token)) {
+        if (!jwtUtils.isTokenValid(token)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String email = JwtUtils.getEmailFromToken(token);
+        String email = jwtUtils.getEmailFromToken(token);
 
         toAuthentication(request, email);
 

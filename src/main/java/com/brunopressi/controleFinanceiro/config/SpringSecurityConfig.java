@@ -1,6 +1,8 @@
 package com.brunopressi.controleFinanceiro.config;
 
 import com.brunopressi.controleFinanceiro.jwt.JwtAuthorizationFilter;
+import com.brunopressi.controleFinanceiro.jwt.JwtUserDetailsService;
+import com.brunopressi.controleFinanceiro.jwt.JwtUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
