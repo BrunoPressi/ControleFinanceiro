@@ -14,7 +14,7 @@ public class SpringDocOpenApiConfig {
     @Bean
     OpenAPI openAPI() {
         return new OpenAPI()
-                //.components(new Components().addSecuritySchemes("security", securityScheme()))
+                .components(new Components().addSecuritySchemes("security", securityScheme()))
                 .info(
                         new Info()
                                 .title("REST API | Controle Financeiro")
