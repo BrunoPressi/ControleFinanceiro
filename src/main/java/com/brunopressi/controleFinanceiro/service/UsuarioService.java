@@ -1,5 +1,6 @@
 package com.brunopressi.controleFinanceiro.service;
 
+import com.brunopressi.controleFinanceiro.entities.Receita;
 import com.brunopressi.controleFinanceiro.entities.Usuario;
 import com.brunopressi.controleFinanceiro.entities.dto.mappers.UsuarioMapper;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioCreateDTO;
@@ -23,7 +24,7 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = false)
-    public UsuarioResponseDTO create(UsuarioCreateDTO usuarioCreateDTO) {
+    public Usuario create(UsuarioCreateDTO usuarioCreateDTO) {
         Usuario usuario = usuarioMapper.toEntity(usuarioCreateDTO);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         try {
@@ -32,15 +33,15 @@ public class UsuarioService {
         catch(DataIntegrityViolationException e) {
             throw new DuplicateEntityException(String.format("Usuario com email %s já cadastrado.", usuario.getEmail()));
         }
-        return usuarioMapper.toDto(usuario);
+        return usuario;
     }
 
     @Transactional(readOnly = true)
-    public UsuarioResponseDTO findById(Long id) {
+    public Usuario findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Usuario %d não encontrado", id))
         );
-        return usuarioMapper.toDto(usuario);
+        return usuario;
     }
 
     @Transactional(readOnly = false)
@@ -50,7 +51,7 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = false)
-    public UsuarioResponseDTO patch(Long id, UsuarioUpdateDTO usuarioUpdateDTO) {
+    public Usuario patch(Long id, UsuarioUpdateDTO usuarioUpdateDTO) {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Usuario %d não encontrado", id))
         );
@@ -63,7 +64,7 @@ public class UsuarioService {
             throw new DuplicateEntityException(String.format("Usuario com email %s já cadastrado", usuarioUpdateDTO.email()));
         }
 
-        return usuarioMapper.toDto(usuario);
+        return usuario;
     }
 
     @Transactional(readOnly = true)

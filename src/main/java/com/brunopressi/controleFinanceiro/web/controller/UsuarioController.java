@@ -1,5 +1,7 @@
 package com.brunopressi.controleFinanceiro.web.controller;
 
+import com.brunopressi.controleFinanceiro.entities.Usuario;
+import com.brunopressi.controleFinanceiro.entities.dto.mappers.UsuarioMapper;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioCreateDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioResponseDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.usuarioDTO.UsuarioUpdateDTO;
@@ -25,13 +27,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.logging.ErrorManager;
 
-@Tag(name = "Usuario Controller", description = "Operações CRUD do usuario")
+@Tag(name = "Usuario Controller", description = "Controlador com recursos relacionados a entidade/objeto usuario")
 @RestController
 @RequestMapping("/api/v1/usuario")
 @RequiredArgsConstructor
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioMapper usuarioMapper;
 
     @Operation(summary = "Criar um novo usuario", description = "Recurso para criar um novo usuario.",
         responses = {
@@ -45,9 +48,9 @@ public class UsuarioController {
     )
     @PostMapping("/cadastro")
     public ResponseEntity<UsuarioResponseDTO> criarUsuario(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) {
-        UsuarioResponseDTO usuarioResponseDTO = usuarioService.create(usuarioCreateDTO);
+        com.brunopressi.controleFinanceiro.entities.Usuario usuario = usuarioService.create(usuarioCreateDTO);
 
-        return ResponseEntity.status(201).body(usuarioResponseDTO);
+        return ResponseEntity.status(201).body(usuarioMapper.toDto(usuario));
     }
 
     @Operation(summary = "Buscar um usuario", description = "Recurso para buscar um usuario. " +
@@ -67,9 +70,9 @@ public class UsuarioController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioResponseDTO> buscarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails) {
-        UsuarioResponseDTO usuarioResponseDTO = usuarioService.findById(userDetails.getId());
+        com.brunopressi.controleFinanceiro.entities.Usuario usuario = usuarioService.findById(userDetails.getId());
 
-        return ResponseEntity.ok(usuarioResponseDTO);
+        return ResponseEntity.ok(usuarioMapper.toDto(usuario));
     }
 
     @Operation(summary = "Deletar um usuario", description = "Recurso para deletar um usuario. " +
@@ -113,8 +116,8 @@ public class UsuarioController {
     @PatchMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails, @RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) {
-        UsuarioResponseDTO usuarioResponseDTO = usuarioService.patch(userDetails.getId(), usuarioUpdateDTO);
+        com.brunopressi.controleFinanceiro.entities.Usuario usuario = usuarioService.patch(userDetails.getId(), usuarioUpdateDTO);
 
-        return ResponseEntity.ok(usuarioResponseDTO);
+        return ResponseEntity.ok(usuarioMapper.toDto(usuario));
     }
 }
