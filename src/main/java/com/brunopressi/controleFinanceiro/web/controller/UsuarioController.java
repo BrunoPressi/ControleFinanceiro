@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,6 +65,7 @@ public class UsuarioController {
             }
     )
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioResponseDTO> buscarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails) {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.findById(userDetails.getId());
 
@@ -85,6 +87,7 @@ public class UsuarioController {
             }
     )
     @DeleteMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deletarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails) {
         usuarioService.delete(userDetails.getId());
 
@@ -108,6 +111,7 @@ public class UsuarioController {
             }
     )
     @PatchMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(@AuthenticationPrincipal JwtUserDetails userDetails, @RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.patch(userDetails.getId(), usuarioUpdateDTO);
 
