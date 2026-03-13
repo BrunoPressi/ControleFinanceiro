@@ -81,6 +81,16 @@ public class ReceitaController {
         return ResponseEntity.ok(receitaMapper.toDto(receita));
     }
 
+    @Operation(summary = "Buscar todas as receitas", description = "Recurso para buscar todas as receitas do usuario." +
+            "Requisição necessita e um TOKEN JWT válido",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Receitas buscadas com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = PageableDTO.class))),
+                @ApiResponse(responseCode = "401", description = "Token JWT inválido ou ausente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = ErrorMessage.class)))
+            }
+    )
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PageableDTO> buscarTodasReceitas(@Parameter(hidden = true) @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,  @AuthenticationPrincipal JwtUserDetails userDetails) {
@@ -89,6 +99,20 @@ public class ReceitaController {
         return ResponseEntity.ok(pageableMapper.toDto(receitaList));
     }
 
+    @Operation(summary = "Atualizar receita", description = "Recurso para atualizar receitas do usuario." +
+            "Requisição necessita e um TOKEN JWT válido",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Receita atualizada com sucesso",
+                        content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = PageableDTO.class))),
+                @ApiResponse(responseCode = "401", description = "Token JWT inválido ou ausente",
+                        content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = ErrorMessage.class))),
+                @ApiResponse(responseCode = "404", description = "Receita não encontrada",
+                        content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = ErrorMessage.class))),
+                @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos",
+                        content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = ErrorMessage.class)))
+            }
+    )
     @PatchMapping("/{receitaId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReceitaResponseDTO> atualizarReceita(@PathVariable Long receitaId, @RequestBody @Valid ReceitaUpdateDTO receitaUpdateDTO, @AuthenticationPrincipal JwtUserDetails userDetails) {
@@ -97,6 +121,18 @@ public class ReceitaController {
         return ResponseEntity.ok(receitaMapper.toDto(receita));
     }
 
+    @Operation(summary = "Deletar receita", description = "Recurso para deletar receitas do usuario." +
+            "Requisição necessita e um TOKEN JWT válido",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Receita deletada com sucesso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = PageableDTO.class))),
+                    @ApiResponse(responseCode = "401", description = "Token JWT inválido ou ausente",
+                            content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "Receita não encontrada",
+                            content = @Content(mediaType = "application/json", schema = @Schema(contentSchema = ErrorMessage.class)))
+            }
+    )
     @DeleteMapping("{receitaId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deletarReceita(@PathVariable Long receitaId, @AuthenticationPrincipal JwtUserDetails userDetails) {
