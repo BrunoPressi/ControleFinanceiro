@@ -56,13 +56,7 @@ public class UsuarioService {
                 () -> new EntityNotFoundException(String.format("Usuario %d não encontrado", id))
         );
 
-        try {
-            usuarioMapper.updateFromDto(usuarioUpdateDTO, usuario);
-            usuarioRepository.flush();
-        }
-        catch (DataIntegrityViolationException e) {
-            throw new DuplicateEntityException(String.format("Usuario com email %s já cadastrado", usuarioUpdateDTO.email()));
-        }
+        usuarioMapper.updateFromDto(usuarioUpdateDTO, usuario);
 
         return usuario;
     }

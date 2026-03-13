@@ -3,10 +3,12 @@ package com.brunopressi.controleFinanceiro.service;
 import com.brunopressi.controleFinanceiro.entities.Receita;
 import com.brunopressi.controleFinanceiro.entities.dto.mappers.ReceitaMapper;
 import com.brunopressi.controleFinanceiro.entities.dto.receitaDTO.ReceitaCreateDTO;
+import com.brunopressi.controleFinanceiro.entities.dto.receitaDTO.ReceitaUpdateDTO;
 import com.brunopressi.controleFinanceiro.jwt.JwtUserDetails;
 import com.brunopressi.controleFinanceiro.repository.ReceitaProjection;
 import com.brunopressi.controleFinanceiro.repository.ReceitaRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,5 +44,19 @@ public class ReceitaService {
     public Page<ReceitaProjection> findAll(Pageable pageable, Long id) {
         Page<ReceitaProjection> receitaList = receitaRepository.findAllByUsuarioId(pageable, id);
         return receitaList;
+    }
+
+    @Transactional(readOnly = false)
+    public Receita patchReceita(Long receitaId, @Valid ReceitaUpdateDTO receitaUpdateDTO, Long usuarioId) {
+        Receita receita = findById(receitaId, usuarioId);
+        receitaMapper.updateFromDto(receitaUpdateDTO, receita);
+
+        return receita;
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteById(Long receitaId, Long usuarioId) {
+        Receita receita = findById(receitaId, usuarioId);
+        receitaRepository.delete(receita);
     }
 }

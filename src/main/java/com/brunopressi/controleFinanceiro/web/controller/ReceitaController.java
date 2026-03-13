@@ -6,6 +6,7 @@ import com.brunopressi.controleFinanceiro.entities.dto.mappers.PageableMapper;
 import com.brunopressi.controleFinanceiro.entities.dto.mappers.ReceitaMapper;
 import com.brunopressi.controleFinanceiro.entities.dto.receitaDTO.ReceitaCreateDTO;
 import com.brunopressi.controleFinanceiro.entities.dto.receitaDTO.ReceitaResponseDTO;
+import com.brunopressi.controleFinanceiro.entities.dto.receitaDTO.ReceitaUpdateDTO;
 import com.brunopressi.controleFinanceiro.jwt.JwtUserDetails;
 import com.brunopressi.controleFinanceiro.repository.ReceitaProjection;
 import com.brunopressi.controleFinanceiro.service.ReceitaService;
@@ -86,5 +87,21 @@ public class ReceitaController {
         Page<ReceitaProjection> receitaList = receitaService.findAll(pageable, userDetails.getId());
 
         return ResponseEntity.ok(pageableMapper.toDto(receitaList));
+    }
+
+    @PatchMapping("/{receitaId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ReceitaResponseDTO> atualizarReceita(@PathVariable Long receitaId, @RequestBody @Valid ReceitaUpdateDTO receitaUpdateDTO, @AuthenticationPrincipal JwtUserDetails userDetails) {
+        Receita receita = receitaService.patchReceita(receitaId, receitaUpdateDTO, userDetails.getId());
+
+        return ResponseEntity.ok(receitaMapper.toDto(receita));
+    }
+
+    @DeleteMapping("{receitaId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deletarReceita(@PathVariable Long receitaId, @AuthenticationPrincipal JwtUserDetails userDetails) {
+        receitaService.deleteById(receitaId, userDetails.getId());
+
+        return ResponseEntity.noContent().build();
     }
 }
